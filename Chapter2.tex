@@ -1,0 +1,249 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2cm,a4paper, headheight= 14pt]{geometry}
+\usepackage{xeCJK}
+%% 也可以选用其它字库：
+\setCJKmainfont{Noto Serif CJK SC}[%
+    UprightFont    = * Light,
+    BoldFont       = * Bold,
+    ItalicFont     = AR PL UKai CN,
+    BoldItalicFont = AR PL KaitiM GB,
+]
+\setCJKsansfont{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans Mono CJK SC}
+\newcommand{\kaishu}{\CJKfontspec{FandolKai}}
+
+
+%% math font
+\usepackage{amsmath,amsthm,amssymb}
+\IfFontExistsTF{XITS-Regular.otf}{%
+    \RequirePackage{unicode-math}% unicode font configuration <XITS|STIX2>
+    \def\boldsymbol#1{\symbfit{#1}}% treat obsoleteness
+    \providecommand{\Vector}[1]{\symbfit{#1}}% general vectors in bold italic
+    \providecommand{\unitVector}[1]{\symbfup{#1}}% unit vectors in bold roman
+    \providecommand{\Matrix}[1]{\symbfup{#1}}% matrix in bold roman
+    \providecommand{\unitMatrix}[1]{\symbfup{#1}}% identity matrix in bold roman
+    \providecommand{\Tensor}[1]{\symbfsfup{#1}}% tensor in sans-serif bold italic
+    \providecommand{\unitTensor}[1]{\symbfsfup{#1}}% identity tensor in sans-serif bold
+    \newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}
+    \newcommand*{\conj}[1]{\overline{#1}}
+    \newcommand*{\hermconj}{^{\mathsf{H}}}
+    \setmainfont[NFSSFamily=entextrm]{XITS}[
+      Extension      = .otf,
+      UprightFont    = *-Regular,
+      BoldFont       = *-Bold,
+      ItalicFont     = *-Italic,
+      BoldItalicFont = *-BoldItalic,
+      Ligatures=TeX,
+    ]
+    \setsansfont[NFSSFamily=entextsf]{XITS}[
+      Extension      = .otf,
+      UprightFont    = *-Regular,
+      BoldFont       = *-Bold,
+      ItalicFont     = *-Italic,
+      BoldItalicFont = *-BoldItalic,
+      Ligatures=TeX,
+    ]
+    \setmonofont[NFSSFamily=entexttt]{XITS}[
+      Extension      = .otf,
+      UprightFont    = *-Regular,
+      BoldFont       = *-Bold,
+      ItalicFont     = *-Italic,
+      BoldItalicFont = *-BoldItalic,
+      Ligatures=TeX,
+    ]
+    \setmathfont{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathfont{XITSMath-Regular}[
+      Extension    = .otf,
+      range={cal,bfcal},
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathfont{XITSMath-Regular}[
+      Extension    = .otf,
+      range={scr,bfscr},
+      Ligatures=TeX,
+      StylisticSet = 2,
+    ]
+    \setmathrm{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathsf{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathtt{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+}{%
+    \RequirePackage{newtxtext}% main font
+    \RequirePackage[cmintegrals]{newtxmath}% times font, load after amsmath and newtxtext packages
+    \RequirePackage{mathrsfs}% enable \mathscr for script alphabet
+    \RequirePackage[cal=cm]{mathalfa}% map styles for calligraphic \mathcal and script \mathscr alphabet
+}
+
+\usepackage{enumitem} %% use for itemindent
+\newcommand\setItemnumber[1]{\setcounter{enumi}{\numexpr#1-1\relax}}  %% setcounter
+%% https://tex.stackexchange.com/questions/255197/how-can-i-change-the-number-of-enumerate-items
+\usepackage{ulem}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Overleaf}
+\lhead{Fundamentals of Adaptive Filtering}
+\rfoot{Page \thepage}
+
+\usepackage[ruled, vlined]{algorithm2e}
+
+\AtBeginDocument{
+	  \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+	  \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+	  \setmathfontface\mathit{XITS-Italic.otf}
+}
+\title{在Overleaf平台上使用C\TeX 完成作业：Chapter 2}
+\author{唐金峰}
+\begin{document}
+\maketitle
+\section*{Problems}
+\begin{enumerate}[itemindent= 0pt]
+    \setItemnumber{2}
+    \item  Consider two complex random processes:
+        \begin{enumerate}[itemindent= -5pt]
+            \item \sout{Pseudo-covariance}: 
+                $ \sigma_{xy}^2 (k, l)
+                = \mathscr{E} \left\{ [x(k)-m_{x}(k)] [y(l)-m_{y}(l)]^* \right\}
+                = r_{xy}(k,l) - m_x(k)m_y^*(l)
+                $
+            \item Since jointly WSS:
+                $ \sigma_{xy}^2 (k, l)
+                = r_{xy}(k-l) - m_x(k)m_y^*(l)
+                $
+            \item Since orthogonal:
+                $ \sigma_{xy}^2 (k, l) = - m_x(k)m_y^*(l) $; we conclude: if $m_x(k) = 0$ or $m_y(l)=0$ 
+        \end{enumerate}
+\end{enumerate}
+
+\begin{enumerate}[itemindent= 0pt]
+    \setItemnumber{5}
+    \item  A second-order adaptive filter:
+        \begin{enumerate}[itemindent= -5pt]
+            \item The models for the signals involved are described by
+                $$ \Vector{x}(k) = [x(k)\; x(k-1)\; x(k-2)]\tran = \alpha_1 \Vector{x_1}(k) + \alpha_2 \Vector{x_2}(k) $$
+                $$ x_{i}(k)= -a_{i} x_{i}(k-1)+u(k) $$
+                for $i=1,2;\; a_1 = a,\; a_2= -b$; given autocorrelation
+                $$
+                r_{x_1}(l) = \mathscr{E}\left[x_{i}(k) x_{i}(k-l)\right]=
+                \frac{\sigma^{2}}{1-a_{i}^{2}} (-a_{i})^{|l|} = (-a_{i})^{|l|};\;\text{for unit variance: } (\sigma^{2} = 1-a_{i}^{2})
+                $$
+                $$
+                \Matrix{R} = \mathscr{E}\{  \Vector{x_1}(k)  \Vector{x_1}(k)\tran \}
+                + \mathscr{E}\{  \Vector{x_2}(k)  \Vector{x_2}(k)\tran \}
+                = \alpha_1^2 \begin{bmatrix}
+                1 & a & a^2\\
+                a & 1 & a  \\
+                a^2&a & 1
+                \end{bmatrix}
+                + \alpha_2^2 \begin{bmatrix}
+                1 & -b & b^2\\
+                -b & 1 & -b \\
+                b^2&-b & 1
+                \end{bmatrix}
+                $$
+                $$\Vector{p} = \mathscr{E} \{  d(k)  \Vector{x}(k) \}
+                = \alpha_3 \mathscr{E} \{  x_2(k)  \Vector{x}(k) \}
+                = \alpha_2 \alpha_3 \begin{bmatrix}
+                1 & -b & b^2
+                \end{bmatrix}\tran
+                $$
+            \item  The Wiener solution can then be expressed as:
+            $$
+            w_0 = \Matrix{R}^{-1}\Vector{p}
+            $$
+        \end{enumerate}
+\end{enumerate}
+
+\begin{enumerate}[itemindent= 0pt]
+    \setItemnumber{8}
+    \item  In the prediction case the input signal is $x(k)$ and the desired signal is $x(k+l)$.
+    
+    Since:
+    $$
+    \mathscr{E} \{ x(k)x(k-l) \} = \frac{1}{2} \cos(\omega_0 l)
+    + \frac{1}{2} \cos(2\omega_0 k - \omega_0l) + \frac{\sigma^2}{1-a^2} (-a)^{|l|}
+    $$
+    Assume $ n_1(k) $ with unit variance, the input signal correlation matrix is
+    $$
+    \Matrix{R} = 
+    \begin{bmatrix}
+        \frac{1}{2} + \frac{1}{2} \cos(2\omega_0 k) +1 &
+        \frac{1}{2}\cos(\omega_0) + \frac{1}{2} \cos(2\omega_0 k -\omega_0)-a \\
+        \frac{1}{2}\cos(\omega_0) + \frac{1}{2} \cos(2\omega_0 k -\omega_0)-a &
+        \frac{1}{2} + \frac{1}{2} \cos(2\omega_0 k) +1
+    \end{bmatrix}
+    $$
+    Vector $\Vector{p}$ is described by
+    $$
+    \Vector{p} = \begin{bmatrix}
+        \mathscr{E} \{ x(k+l)x(k) \} \\
+        \mathscr{E} \{ x(k+l)x(k-1) \}
+    \end{bmatrix} = \begin{bmatrix}
+        \frac{1}{2} \cos(\omega_0 l)
+        + \frac{1}{2} \cos(\omega_0 (2k+l)) + (-a)^{|l|} \\
+        \frac{1}{2} \cos(\omega_0 (l+1))
+        + \frac{1}{2} \cos(\omega_0 (2k+l-1)) + (-a)^{|l+1|}
+    \end{bmatrix}
+    $$
+    The expression for the optimal coefﬁcient vector is easily derived.
+    $$
+    w_0 = \Matrix{R}^{-1}\Vector{p}
+    $$
+    where in the above equation the value of $l$ is considered positive. Since part of input signal is deterministic and nonstationary, the autocorrelation is time dependent.
+    
+    Specially, for $\omega_0 = 0$, the autocorrelation is time indpendent. But there is no need for Wiener filter, we predict with the property of AR(1) process.
+\end{enumerate}
+
+
+%% This is needed if you want to add comments in
+%% your algorithm with \Comment
+\SetKwComment{Comment}{/* }{ */}
+\normalem %%%% disable auto underline
+\begin{algorithm}[hbt!]
+    \caption{Gradient Descent}\label{alg:gradient}
+    \KwData{$\Vector{w}(0) = \mathbf{0}$, $\Vector{p}$, $\Matrix{R}$}
+    \KwResult{$ \arg\min \xi:=\{ \Vector{w} \in \mathbb{R}^2: \xi=\sigma_d^2 -2 \Vector{w}\tran \Vector{p} + \Vector{w}\tran \Matrix{R} \Vector{w} \}  $}
+    $k \gets 0$\;
+    $\Vector{g}_w(0) \gets -2 \Vector{p} + 2\Matrix{R} \Vector{w}(0)$\;
+    \While{$\| \Vector{g}_w(k) \| \geq \epsilon $}{
+        $\Vector{w}(k+1) = \Vector{w}(k) - \mu \Vector{g}_w(k)$\;
+        $k \gets k+1$  \Comment*[r]{Can be reassigned directly}
+        $\Vector{g}_w(k) = -2 \Vector{p} + 2\Matrix{R} \Vector{w}(k)$\;
+    }
+\end{algorithm}
+
+\begin{algorithm}[hbt!]
+    \caption{Newton's Method}\label{alg:newton}
+    \KwData{$\Vector{w}(0) = \mathbf{0}$, $\Vector{p}$, $\Matrix{R}$}
+    \KwResult{$ \arg\min \xi:=\{ \Vector{w} \in \mathbb{R}^2: \xi=\sigma_d^2 -2 \Vector{w}\tran \Vector{p} + \Vector{w}\tran \Matrix{R} \Vector{w} \}  $}
+    $k \gets 0$\;
+    $\Vector{g}_w(0) \gets -2 \Vector{p} + 2\Matrix{R} \Vector{w}(0)$\;
+    \While{$\| \Vector{g}_w(k) \| \geq \epsilon $}{
+        $\Vector{w}(k+1) = \Vector{w}(k) -\tfrac{1}{2} \Matrix{R}^{-1}\Vector{g}_w(k)$\;
+        $k \gets k+1$\;
+        $\Vector{g}_w(k) = -2 \Vector{p} + 2\Matrix{R} \Vector{w}(k)$ \Comment*[r]{Reached in one step}
+    }
+\end{algorithm}
+
+\end{document}
