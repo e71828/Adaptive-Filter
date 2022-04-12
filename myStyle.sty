@@ -1,0 +1,121 @@
+%! Package = myStyle
+%! Author = e71828
+%! Date = 2022/4/12
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{myStyle}[2021/4/12 e71828's Package]
+\RequirePackage{etoolbox}% a toolbox of programming facilities
+\RequirePackage[margin=2cm,a4paper, headheight= 14pt]{geometry}
+\RequirePackage{xeCJK}
+%% 也可以选用其它字库：
+\setCJKmainfont{Noto Serif CJK SC}[%
+    UprightFont    = * Light,
+    BoldFont       = * Bold,
+    ItalicFont     = AR PL UKai CN,
+    BoldItalicFont = AR PL KaitiM GB,
+]
+\setCJKsansfont{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans Mono CJK SC}
+\newcommand{\kaishu}{\CJKfontspec{FandolKai}}
+
+
+%% math font
+\RequirePackage{amsmath,amsthm,amssymb}
+\IfFontExistsTF{XITS-Regular.otf}{%
+    \RequirePackage{unicode-math}% unicode font configuration <XITS|STIX2>
+    \def\boldsymbol#1{\symbfit{#1}}% treat obsoleteness
+    \providecommand{\Vector}[1]{\symbfit{#1}}% general vectors in bold italic
+    \providecommand{\unitVector}[1]{\symbfup{#1}}% unit vectors in bold roman
+    \providecommand{\Matrix}[1]{\symbfup{#1}}% matrix in bold roman
+    \providecommand{\unitMatrix}[1]{\symbfup{#1}}% identity matrix in bold roman
+    \providecommand{\Tensor}[1]{\symbfsfup{#1}}% tensor in sans-serif bold italic
+    \providecommand{\unitTensor}[1]{\symbfsfup{#1}}% identity tensor in sans-serif bold
+    \newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}
+    \newcommand*{\conj}[1]{\overline{#1}}
+    \newcommand*{\hermconj}{^{\mathsf{H}}}
+    \setmainfont[NFSSFamily=entextrm]{XITS}[
+      Extension      = .otf,
+      UprightFont    = *-Regular,
+      BoldFont       = *-Bold,
+      ItalicFont     = *-Italic,
+      BoldItalicFont = *-BoldItalic,
+      Ligatures=TeX,
+    ]
+    \setsansfont[NFSSFamily=entextsf]{XITS}[
+      Extension      = .otf,
+      UprightFont    = *-Regular,
+      BoldFont       = *-Bold,
+      ItalicFont     = *-Italic,
+      BoldItalicFont = *-BoldItalic,
+      Ligatures=TeX,
+    ]
+    \setmonofont[NFSSFamily=entexttt]{XITS}[
+      Extension      = .otf,
+      UprightFont    = *-Regular,
+      BoldFont       = *-Bold,
+      ItalicFont     = *-Italic,
+      BoldItalicFont = *-BoldItalic,
+      Ligatures=TeX,
+    ]
+    \setmathfont{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathfont{XITSMath-Regular}[
+      Extension    = .otf,
+      range={cal,bfcal},
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathfont{XITSMath-Regular}[
+      Extension    = .otf,
+      range={scr,bfscr},
+      Ligatures=TeX,
+      StylisticSet = 2,
+    ]
+    \setmathrm{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathsf{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+    \setmathtt{XITSMath-Regular}[
+      Extension    = .otf,
+      BoldFont     = XITSMath-Bold,
+      Ligatures=TeX,
+      StylisticSet = 1,
+    ]
+}{%
+    \RequirePackage{newtxtext}% main font
+    \RequirePackage[cmintegrals]{newtxmath}% times font, load after amsmath and newtxtext packages
+    \RequirePackage{mathrsfs}% enable \mathscr for script alphabet
+    \RequirePackage[cal=cm]{mathalfa}% map styles for calligraphic \mathcal and script \mathscr alphabet
+}
+
+\RequirePackage{enumitem} %% use for itemindent
+\newcommand\setItemnumber[1]{\setcounter{enumi}{\numexpr#1-1\relax}}  %% setcounter
+%% https://tex.stackexchange.com/questions/255197/how-can-i-change-the-number-of-enumerate-items
+\RequirePackage{ulem}
+
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Overleaf}
+\lhead{Fundamentals of Adaptive Filtering}
+\rfoot{Page \thepage}
+
+\RequirePackage[ruled, vlined]{algorithm2e}
+
+\AtBeginDocument{
+	  \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+	  \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+	  \setmathfontface\mathit{XITS-Italic.otf}
+}
