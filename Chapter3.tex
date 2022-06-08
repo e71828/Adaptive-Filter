@@ -1,0 +1,156 @@
+\documentclass[11pt]{article}
+%%begin novalidate
+\catcode`_=\active
+\newcommand_[1]{\ensuremath{\sb{\scriptscriptstyle #1}}}
+%%end novalidate
+
+\usepackage{myStyle}
+\title{在Overleaf平台上使用C\TeX 完成作业：Chapter 3}
+\author{唐金峰}
+\begin{document}
+\maketitle
+\section*{Problems}
+\begin{enumerate}[itemindent= 0pt]
+    \setItemnumber{2}
+    \item  The singal:
+        $$x(k)=-0.85x(k-1)+n(k)$$
+        \begin{enumerate}[itemindent= -5pt]
+            \item Compute the Wiener solution, according to example 2.1(b):
+            $$
+            \Vector{w}(0)=
+            \begin{bmatrix}
+            (-a)^L \\ 0
+            \end{bmatrix}
+            $$
+            Therefore,
+            $$
+            \hat{x}(k+L)=(-a)^{L} x(k) =(-0.85)^{L} x(k)
+            $$
+            \item Choose an appropriate value for $\mu$ and plot the convergence path for the LMS algorithm on the MSE error surface.
+            $$
+            \Matrix{R} = \frac{\sigma_n^2}{1-a^2}
+            \begin{bmatrix}
+            1 & -a \\
+            -a & 1
+            \end{bmatrix}
+            $$
+            we get,
+            $$
+            \lambda_{max} = \frac{\sigma_n^2}{1-a} = 2
+            $$
+            So choose $\mu= \dfrac{1/5}{\lambda_{max} \times 2 + \frac{\sigma_n^2}{1-a^2} }=0.032 $, and in a prediction case, also choose $L=1$.
+            $$
+            \Vector{p} = \frac{\sigma_n^2}{1-a^2}\begin{bmatrix}
+            (-a)^L \\ (-a)^{L+1}
+            \end{bmatrix}=\frac{\sigma_n^2}{1-a^2}\begin{bmatrix}
+            -a \\ a^2
+            \end{bmatrix}
+            $$
+            Therefore,
+            $$
+            \Vector{w}_0 =\Matrix{R}^{-1}\Vector{p}=\begin{bmatrix}
+            -a \\ 0
+            \end{bmatrix}=\begin{bmatrix}
+            -0.85 \\ 0
+            \end{bmatrix}
+            $$
+            \item Plot the learning curves for the MSE and the filter coefficients in a single run as well as for the average of 25 runs.
+        \end{enumerate}
+\end{enumerate}
+
+
+\begin{enumerate}[itemindent= 0pt]
+    \setItemnumber{5}
+    \item  The updating equation:
+        $$\Vector{w}(k+1) = \Vector{w}(k) +2 \tilde{\mu} e(k)\Vector{x}(k) +\gamma [\Vector{w}(k)-\Vector{w}(k-1)] $$
+        \begin{enumerate}[itemindent= -5pt]
+            \item Compute the range of values of $\mu$:
+            \begin{equation}\label{eq: LMF}
+                \Vector{b}(k) :=  \gamma \Vector{b}(k-1) + (1-\gamma)\Vector{g}_w(k)
+            \end{equation}
+
+            Assume,
+            $$
+            \begin{aligned}
+            \Vector{w}(k+1) &=\Vector{w}(k)-\mu \Vector{b}(k) \\
+            \gamma \Vector{w}(k) &=\gamma \Vector{w}(k-1)-\gamma \mu \Vector{b}(k-1) \\
+            \Vector{w}(k+1)-\gamma \Vector{w}(k) &=\Vector{w}(k)-\gamma \Vector{w}(k-1)-\mu \Vector{b}(k)+\gamma \mu \Vector{b}(k-1)\\
+            \Vector{w}(k+1)-\gamma \Vector{w}(k) &=\Vector{w}(k)-\gamma \Vector{w}(k-1)- (1-\gamma) \mu \Vector{g}_w(k)
+            \end{aligned}
+            $$
+            Lowpass filtering the noisy gradient Rename the noisy gradient, passing the signals $ \Vector{g}_w(k) $ through low pass filters will prevent the large fluctuations of direction during adaptation process.
+
+            Momentum LMS algorithm LPF is an IIR filter of first order.
+
+            In these equations, it can be \emph{proved} that the $\mu$ gets the same value range as the euqation (3.19).
+            So,
+            $$
+            \Vector{w}(k+1) = \Vector{w}(k) +2 \tilde{\mu} e(k)\Vector{x}(k) +\gamma [\Vector{w}(k)-\Vector{w}(k-1)]
+            $$
+            where,
+            $
+            \tilde{\mu} = (1-\gamma) \mu.
+            $
+
+            According to the euqation (3.19),
+            $$
+            0<\tilde{\mu}<\frac{1-\gamma}{\lambda_{\max }}
+            $$
+            \item The objective function this algorithm actually minimizes:
+
+            Since,
+            $$
+            \Vector{g}_w(l)\;\mathrm{d} \Vector{w} = e^2(l)
+            $$
+            So, according to Eq~\eqref{eq: LMF}
+            \begin{align*}
+                \xi(k) &=  (1 - \gamma) \sum_{l=0}^{k}\gamma^{k-l}e^2(l)
+            \end{align*}
+
+            \item Show that this algorithm can have faster convergence and higher misadjustment than the LMS algorithm.
+
+            Answer: The convergence rate may decrease.
+        \end{enumerate}
+\end{enumerate}
+
+\begin{enumerate}[itemindent= 0pt]
+    \setItemnumber{12}
+    \item  System identification:
+    $$
+    \begin{aligned}
+    x(k)&= -1.2x(k-1)-0.81x(k-2)+n_x(k)\\
+    \sigma_x^2 &=1\\
+    \textsc{unknown:} H(z)&=1+ 0.9z^{-1}+ 0.1z^{-2}+ 0.2z^{-3}\\
+    \sigma_n^2 &=0.04
+    \end{aligned}
+    $$
+    \begin{enumerate}[itemindent= -5pt]
+    \item Choose an appropriate $\mu$, run an ensemble of 20 experiments, and plot the average learning curve.
+    $$
+    r_{* \pi}[k]=\sigma_x^{2} \frac{\frac{1+r^{2}}{1-r^{2}} \sqrt{1+\left(\frac{1-r^{2}}{1+r^{2}}\right)^{2} \cot ^{2} \left(2 \pi f_{0}\right)}}{1-2 r^{2} \cos \left(4 \pi f_{0}\right)+r^{4}} r^{|k|} \cos \left(2 \pi f_{0}|k|-\phi\right)
+    $$
+    $$
+    \phi=\arctan \left[\frac{1-r^{2}}{1+r^{2}} \cot \left(2 \pi f_{0}\right)\right]
+    $$
+    \begin{gather}
+    a[1]=-2 r \cos \left( 2 \pi f_{0}\right)=1.2\\
+    a[2]=r^{2}=0.81
+    \end{gather}
+    这里，
+    $
+    r \exp \left(\pm j 2 \pi f_{0}\right)
+    $是二阶AR的极点。
+
+    The eigenvalues for 4-order autocorrelation matrix are $\begin{bmatrix}
+    0.82941 &0.176   &9.33716 &9.77687
+    \end{bmatrix}$.
+
+    So choose the $\mu= \dfrac{1/5}{\lambda_{max} \times 2 + \sum_{j=0}^{N} \lambda_j }
+    =\dfrac{1/5}{\lambda_{max} \times 2 + 4r_{xx}[0] }=0.005 $.
+    \item Plot the curve obtained using (3.41), (3.45), and (3.46), and compare the results.
+    \item Compare the measured and theoretical values for the misadjustment.
+    \item Calculate the time constans $\tau_{wi}$ and $\tau_{ei}$, and the expected number of iterations to achieve convergence.
+    \end{enumerate}
+\end{enumerate}
+
+\end{document}
