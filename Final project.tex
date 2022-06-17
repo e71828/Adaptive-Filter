@@ -1,0 +1,245 @@
+\documentclass[11pt]{article}
+% %%begin novalidate
+% \catcode`_=\active
+% \newcommand_[1]{\ensuremath{\sb{\scriptscriptstyle #1}}}
+% %%end novalidate
+
+\usepackage{myStyle}
+
+\title{在 Overleaf 平台上使用 C\TeX 完成作业：Final project}
+\author{唐金峰}
+\begin{document}
+\maketitle
+
+\section*{Problem: Signal Enhancement}
+
+
+It is desired to design an adaptive Wiener filter to enhance a sinusoidal signal buried in noise. The noisy sinusoidal signal is given by
+$$x_n = s_n + v_n \text{\;, \hspace{1em} where \space} s_n = \sin(ω_0 n)$$
+with $ω_0 = 0.075π$. The noise $v_n$ is related to the secondary signal $y_n$ by
+$$
+v_{n}=y_{n}+y_{n-1}+y_{n-2}+y_{n-3}+y_{n-4}+y_{n-5}+y_{n-6}
+$$
+The signal $y_{n}$ is assumed to be an order-4 AR process with reflection coefficients:
+$$
+\left\{\gamma_{1}, \gamma_{2}, \gamma_{3}, \gamma_{4}\right\}=\{0.5,-0.5,0.5,-0.5\}
+$$
+As in an earlier experiment, the variance $σ^2$ of the driving white noise of the model must be chosen in such a way as to make the variance $σ^2_v$ of the noise component $v_n$ approximately \emph{one}.
+
+\section{Theoretical solutions}\label{sec: a}
+For a Wiener filter of order $M = 6$, determine the theoretical direct-form Wiener filter coefficient vector:
+$$\Vector{h} = [h_0, h_1, \cdots, h_6]$$
+for estimating $y_{n}$ (or, rather $v_{n}$) from $y_{n}$. Determine also the theoretical lattice/ladder realization coefficients:
+$$\Vector{γ} = [γ_1, γ_2, \cdots, γ_6], \hspace{1em} \Vector{g} = [g_0, g_1, \cdots, g_6]$$
+
+\section*{解:}\label{solution: a}
+
+\emph{注意}：反射系数存在两种定义，这里采用现代谱估计的定义。$k_p = a_p(p)$
+\begin{enumerate}
+    \item 先假设驱动白噪声的方差为 $1$，计算 $ v(n) $ 的方差，再用其作为缩放因子调整驱动白噪声的方差。
+    \item 步降法得，AR参数： $a = [1, -0.25, -0.1875, 0.5, -0.5],\;σ_u^2 =0.0534 $
+    \item direct-form weights: $\Vector{h} = [h_0, h_1, \cdots, h_6] = \begin{bmatrix} 1 &1 &1 &1 &1 &1 &1 &1 \end{bmatrix}$
+    \item ladder coefficients: $\Vector{g} = [g_0, g_1, \cdots, g_6] = \begin{bmatrix}1.1328 & 1.5990 & 1.5104 & 0.4838 & 2.5386 & -1.0878 & 1 \end{bmatrix}$
+    \item lattice reflection coefficient: $\Vector{γ} = [γ_1, γ_2, \cdots, γ_6] = \begin{bmatrix} 0.5 & -0.5 & 0.5 & -0.5 & -1.6358 & -0.9292 \end{bmatrix}$
+
+\end{enumerate}
+\section{LMS algorithm}\label{sec: b}
+
+Generate input pairs $\{x_n, y_n\}$ (making sure that the transients introduced by the modeling filter have died out), and filter them through the LMS algorithm to generate the filter output pairs $\{\hat{x}_n, y_n\}$. On the same graph, plot $e_n$ together with the desired signal $s_n$.
+
+Plot also a few of the adaptive filter coefficients such as $h_4(n), h_5(n)$, and $h_6(n)$. Observe their convergence to the theoretical Wiener solution.
+
+You must generate enough input pairs in order to achieve convergence of the LMS algorithm and observe the steady-state converged output of the filter.
+
+Experiment with the choice of the adaptation parameter $μ$. Start by determining $λ_{\max}, λ_{\min}$, the eigenvalue spread $λ_{\max}/λ_{\min}$ of $\Matrix{R}$ and the corresponding time constant.
+
+\section*{解:}\label{solution: b}
+\begin{enumerate}
+    \item 4阶AR 输入的自相关是 $r_{yy} = \begin{bmatrix} 0.1689 & -0.0844 & 0.1055 & -0.1161 & 0.1174 \end{bmatrix} $
+    \item 由于自适应的阶数是6，所以将 $r_{yy}$ 填充到 7 个元素。\emph{自相关矩阵非满秩}。
+
+    $r_{yy} = \begin{bmatrix} 0.1689 & -0.0844 & 0.1055 & -0.1161 & 0.1174 & 0 & 0 \end{bmatrix} $
+
+    \item $λ_{\max},\; λ_{\min},\; λ_{\max}/λ_{\min}$ 分别是 $ \begin{matrix} 0.7062, & -0.0577, & -12.2457.  \end{matrix} $
+    \item 上界$\mu_{\max} = \frac{1}{ 2\max{} \lambda + \sum \lambda}$，取$\mu = \frac{1}{5}\mu_{\max} = 0.0771 $
+
+    \item \emph{In generating $y_n$ make sure that the transients introduced by the filter have died out.}
+\end{enumerate}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/input.png}
+      \caption{}
+      \label{fig:inputs}
+    \end{subfigure}%
+    \hfill  % add desired spacing
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/estimation error.png}
+      \caption{}
+      \label{fig:estimation_error}
+    \end{subfigure}
+    \caption{Wiener 滤波器的输入与 LMS 的误差输出。(a) 主输入与次输入，(b) LMS 算法的增强-误差输出。}
+    \label{fig:inputs of Wiener filter}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/coefficient.png}
+      \caption{}
+      \label{fig:coefficient}
+    \end{subfigure}%
+    \hfill  % add desired spacing
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/coefficient avg.png}
+      \caption{}
+      \label{fig:coefficient avg}
+    \end{subfigure}
+    \caption{The direct-form coefficients of the Wiener filter。(a) 单次，(b) 20 次平均。}
+    \label{fig:coefficients}
+\end{figure}
+
+
+\section{Tracking changes}
+Next, we change this experiment into a non-stationary one. Suppose the total number of input pairs that you used in parts \eqref{sec: b} is $N$. And suppose that at time $n = N$, the input statistics changes suddenly so that the primary signal is given now by the model:
+$$x_n = s_n + v_n\;, \hspace{1em}\text{where}\hspace{1em} v_{n}=y_{n}+y_{n-1}+y_{n-2}+y_{n-3}$$
+and $y_n$ changes from a fourth-order AR model to a second-order model with reflection coefficients (use the same $σ^2_v$ as before):
+$$\{γ_1, γ_2\} = \{0.5,−0.5\}$$
+Repeat parts \eqref{sec: a} and \eqref{sec: b}, keeping the filter order the same, $M = 6$. Use $2N$ input pairs, such that the first $N$ follow the original statistics and the second $N$ follow the changed statistics. Compare the capability of the LMS and lattice adaptive filters in tracking such changes.
+
+Here, the values of $μ$ for the LMS case and $λ$ for the lattice case, will make more of a difference in balancing the requirements of learning speed and quality of estimates.
+\section*{解:}\label{solution: c}
+
+\begin{enumerate}
+    \item 先假设驱动白噪声的方差为 $1$，计算 $ v(n) $ 的方差，再用其作为缩放因子调整驱动白噪声的方差。
+    \item 步降法得，AR参数： $a = [1, 0.25, -0.5],\;σ_u^2 =0.1607 $
+    \item direct-form weights: $\Vector{h} = [h_0, h_1, \cdots, h_6] = \begin{bmatrix} 1 &1 &1 &1 &1 &0 &0 &0 \end{bmatrix}$
+    \item ladder coefficients: $\Vector{g} = [g_0, g_1, \cdots, g_6] = \begin{bmatrix} 1.1250 & 1.5833 & 0.3889 & 1 & 0 & 0 & 0 \end{bmatrix}$
+    \item lattice reflection coefficient: $\Vector{γ} = [γ_1, γ_2, \cdots, γ_6] = \begin{bmatrix} 0.5 & -0.5 & -0.7222 & 0.2387 & 1.8898 & -0.4253 \end{bmatrix}$
+
+    \item 2阶AR 输入的自相关是 $r_{yy} = \begin{bmatrix} 0.2875 & -0.2143 & 0.1607 \end{bmatrix} $
+    \item 由于自适应的阶数是6，所以将 $r_{yy}$ 填充到 7 个元素。\emph{自相关矩阵非满秩}。
+
+    $r_{yy} = \begin{bmatrix} 0.2875 & -0.2143 & 0.1607 &0 & 0 & 0 & 0 \end{bmatrix} $
+
+    \item $λ_{\max},\; λ_{\min},\; λ_{\max}/λ_{\min}$ 分别是 $ \begin{matrix} 0.8190, & -0.0258, & -31.786.  \end{matrix} $
+    \item 上界$\mu_{\max} = \frac{1}{ 2\max{} \lambda + \sum \lambda}$，取$\mu = \frac{1}{5}\mu_{\max} = 0.0550 $
+    \item 由于 $\mu$ 与改变前的 $\mu$ 近似，故继续采用前者值，而{\color{blue} \emph{rlsl}} 的 $\lambda$ 取 $0.99 $ 。
+
+\end{enumerate}
+
+\begin{figure}[!htbp]
+    \centering
+    %trim option's parameter order: left bottom right top
+    \includegraphics[width=0.50\textwidth]{final/coefficient avg tracking.png}
+    \caption{The direct-form coefficients for tracking using lms.}
+    \label{fig:coefficients tracking}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/estimation error tracking lms.png}
+      \caption{}
+      \label{fig:error tracking lms}
+    \end{subfigure}%
+    \hfill  % add desired spacing
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/estimation error tracking rlsl.png}
+      \caption{}
+      \label{fig:error tracking rlsl}
+    \end{subfigure}
+    \caption{Estimation error while tracking. (a) lms，(b) rlsl。}
+    \label{fig:estimation error tracking}
+\end{figure}
+
+\begin{enumerate}
+    \setItemnumber{11}
+    \item 由图 \ref{fig:coefficients tracking} 和 图 \ref{fig:estimation error tracking} 可以看出 {\color{blue} \emph{rlsl}} 算法的跟踪能力较 {\color{blue} \emph{lms}} 强，或者说对环境的改变更敏感。
+
+    \item 当 $\mu$ 取值较小时，收敛会变慢。time samples 需要更多。
+
+    \item 由图 \ref{fig:error tracking 100}，当 变化后的噪声$\sigma_v^2$ 为 变化前的$1/100$时，将使得系统更完美，增强效果好，但200个点内 direct-form weights 跟踪失效。
+\end{enumerate}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/coefficient avg tracking100.png}
+      \caption{}
+      \label{fig:coefficient tracking lms 100}
+    \end{subfigure}%
+    \hfill  % add desired spacing
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/estimation error tracking lms 100.png}
+      \caption{}
+      \label{fig:error tracking lms 100}
+    \end{subfigure}
+    \caption{Estimation error while tracking $\sigma_v^2/100$. 30 次平均 (a) coefficient with lms (b) estimation error with lms。}
+    \label{fig:error tracking 100}
+\end{figure}
+
+\section{Free parameter tuning}
+Finally, feel free to ``tweak" the statements of all of the above parts as well as the definition of the models in order to show more clearly and more dramatically the issues involved, namely, learning speed versus quality, and the effect of the adaptation parameters, eigenvalue spread, and time constants. One other thing to notice in this experiment is that, while the \emph{adaptive weights tend to fluctuate a lot as they converge, the actual filter outputs $\{\hat{x}_n, y_n\}$ behave better and are closer to what one might expect}.
+
+\section*{解:}\label{solution: d}
+
+\begin{enumerate}
+    \item 由图 \ref{fig:error tracking 100}，当 变化后的噪声$\sigma_v^2$ 为 变化前的$1/100$时，将使得系统更完美，增强效果好，但direct-form weights 跟踪失效。事实上，由图 \ref{fig:coefficients tracking avg b-set}， $h_4(n)$、$h_5(n)$ 和 $h_6(n)$的值随变化后的噪声方差下降跟踪能力渐弱。或者说，$\mu$ 的值需要对应放大，得到更快的学习速率。
+\end{enumerate}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/coefficient avg tracking per1.png}
+      \caption{}
+      \label{fig:coefficient tracking lms per1}
+    \end{subfigure}%
+    \hfill  % add desired spacing
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/coefficient avg tracking per4.png}
+      \caption{}
+      \label{fig:error tracking lms per4}
+    \end{subfigure}\\
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/coefficient avg tracking per9.png}
+      \caption{}
+      \label{fig:error tracking lms per9}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{final/coefficient avg tracking per25.png}
+      \caption{}
+      \label{fig:error tracking lms per25}
+    \end{subfigure}
+    \caption{coefficients tracking while $\sigma_v^2/b $. 30 次平均 lms. (a) b=1, (b) b=4, (c) b=9, (d) b=25}
+    \label{fig:coefficients tracking avg b-set}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    %trim option's parameter order: left bottom right top
+    \includegraphics[width=0.50\textwidth]{final/coefficient avg tracking per100100.png}
+    \caption{The direct-form coefficients for tracking using lms, $\sigma_v^2/100 $, $10\mu$.}
+    \label{fig:coefficients tracking per100100}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{subfigure}[b]{0.56\textwidth}
+      \includegraphics[width=\textwidth]{final/filter fir wiener.png}
+      \caption{}
+      \label{fig:Adaptive FIR Wiener filter}
+    \end{subfigure}%
+    \\  % add desired spacing
+    \begin{subfigure}[b]{0.8\textwidth}
+      \includegraphics[width=\textwidth]{final/filter lattice.png}
+      \caption{}
+      \label{fig:Adaptive lattice Wiener filter}
+    \end{subfigure}
+    \caption{Adaptive filter. (a) Adaptive FIR Wiener filter. (b) Adaptive lattice Wiener filter.}
+    \label{fig:Adaptive filter}
+\end{figure}
+
+\end{document}
